@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Form and Result</title>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.2/css/dataTables.dataTables.min.css">
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/2.0.2/js/dataTables.min.js"></script>
+
+    <script>
+        async function handleFileSelect() {
+            const formData = new FormData(document.getElementById('uploadForm'));
+
+            try {
+                const response = await fetch('/api/v1/employee-projects/common', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    renderDataTable(data);
+                    $('#commonProjectsTableContainer').show();
+                } else {
+                    console.error('Error:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        function renderDataTable(data) {
+            const tableBody = data.map(result => `<tr>
+                <td>${result.firstEmployeeId}</td>
+                <td>${result.secondEmployeeId}</td>
+                <td>${result.commonProjectId}</td>
+                <td>${result.daysWorked}</td>
+            </tr>`).join('');
+
+            document.getElementById('commonProjectsTableBody').innerHTML = tableBody;
+
+            $('#commonProjectsTable').DataTable();
+        }
+    </script>
+</head>
+<body>
+    <h2>Upload CSV File</h2>
+
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" name="csvFile" accept=".csv" required onchange="handleFileSelect()">
+    </form>
+
+    <div id="commonProjectsTableContainer" style="display: none">
+        <h3>Common Projects:</h3>
+        <table id="commonProjectsTable" class="display">
+            <thead>
+            <tr>
+                <th>Employee ID #1</th>
+                <th>Employee ID #2</th>
+                <th>Project ID</th>
+                <th>Days Worked</th>
+            </tr>
+            </thead>
+            <tbody id="commonProjectsTableBody">
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
