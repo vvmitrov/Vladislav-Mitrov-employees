@@ -2,7 +2,6 @@ package org.employees.util;
 
 import com.github.sisyphsu.dateparser.DateParserUtils;
 import org.employees.model.EmployeeProject;
-import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
